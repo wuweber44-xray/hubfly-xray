@@ -1,0 +1,28 @@
+name: Build and push image to ttl.sh
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build and push to ttl.sh
+        uses: docker/build-push-action@v6
+        with:
+          context: ./deploy
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ttl.sh/hubfly-xray-ws:24h
+      - name: Show image address
+        run: |
+          echo "IMAGE=ttl.sh/hubfly-xray-ws:24h" >> "$GITHUB_STEP_SUMMARY"
+          echo "Image pushed: ttl.sh/hubfly-xray-ws:24h (expires in ~24h)"
